@@ -15,55 +15,78 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-typedef struct node {
+typedef struct Node {
     int number;
-    struct node *next;
-} node;
+    struct Node *next;
+} Node;
 
-node* push( node *head, int number);// add a node on top of stack; 
-int pop(node *head);                // remove topmost node; return node; 
-void printStack(node *head);        //print the whole stack.
-node *clearStack(node *head);
+typedef struct Stack{
+    Node *head;
+} Stack;
+
+Node *createNode(int number);
+Stack *createStack();
+void push ( Stack *stack, int number );
+int pop (Stack *stack);
+void printStack (Stack *stack);
+void clearStack (Stack *stack);
+
+
+
 int main(int argc, char *argv[]){
     if( argc< 2){
         printf("No input\n");
         return 1;
     }
-    node* stackHead = NULL;
-    
+    Stack *stack = createStack();
+        
     for(int i=1; i<argc;i++){
-        stackHead = push(stackHead,atoi(argv[i]));
+        push(stack,atoi(argv[i]));
     }
-    printStack(stackHead);
-    stackHead = clearStack(stackHead);
-    printStack(stackHead);
-    stackHead = push(stackHead,4);
-    printStack(stackHead);
+    printStack(stack);
+    clearStack(stack);
+    printStack(stack);
+
+    
 }
 
-node *push( node *head, int number){
+Node *createNode(int number){
+    Node *newNode = (Node *)malloc(sizeof(Node));
+    newNode->number = number;
+    newNode->next = NULL;
+    return newNode;
+}
+
+Stack *createStack(){
+    Stack* newStack = (Stack *)malloc(sizeof(Stack));
+    newStack->head = NULL;
+    return newStack;
+}
+
+void push (Stack *stack, int number){
+    Node *newNode = createNode(number);
+    newNode->next = stack->head;
+    stack->head = newNode;
+    printf("%i pushed in stack.\n", stack->head->number);
+}
+
+int pop (Stack *stack){
     
-    node *temp = malloc(sizeof(node));
-    temp->number = number;
-    temp->next = head;
-
-    head = temp;
-    printf("%i pushed in stack.\n", head->number);
-    return head;
-} 
-
-int pop(node *head){
-  
-    int temp = head->number;
-    node *ptr = head;
-    head=head->next;
+    if(stack->head==NULL){
+        printf("****************STACK IS EMPTY POPPING 0*************\n");
+        return 0;
+    }
+    Node *ptr = stack->head;
+    
+    int temp = stack->head->number;
+    stack->head = stack->head->next;
     free(ptr);
+
     return temp;
 }
 
-void printStack(node *head){
-    
-    node *ptr = head;
+void printStack ( Stack *stack ){
+    Node *ptr = stack->head;
     printf("Printing Stack Values : [ ");
     while( ptr!=NULL){
         printf("%i ",ptr->number);
@@ -72,10 +95,11 @@ void printStack(node *head){
     printf("]\n");
 }
 
-node *clearStack(node *head){
-    while( head!=NULL ){
-        node *temp = head->next;
-        printf("%i popped out of stack.\n",pop(head));
-        head= temp;
+void clearStack (Stack *stack){
+    printf("Clearing Stack...\n");
+    while( stack->head!=NULL ){
+        Node *temp = stack->head->next;
+        printf("%i popped out of stack.\n",pop(stack));
+        stack->head= temp;
     }
 }
